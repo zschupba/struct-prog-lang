@@ -20,6 +20,9 @@ def evaluate(ast, environment={}):
         print(s)
         printed_string = s
         return None
+    if ast["tag"] == "zschupba":
+        environment["_kentid_"] = "zschupba@kent.edu"
+        printed_string = environment["_kentid_"]
     if ast["tag"] == "if":
         condition_value = evaluate(ast["condition"], environment)
         if condition_value:
@@ -49,7 +52,7 @@ def evaluate(ast, environment={}):
             parent_environment = environment["$parent"]
             if ast["value"] in parent_environment:
                 return parent_environment[ast["value"]]
-        raise Exception(f"Value [{ast["value"]}] not found in environment {environment}.")
+        raise Exception(f"Value [{ast['value']}] not found in environment {environment}.")
     if ast["tag"] in ["+", "-", "*", "/"]:
         left_value = evaluate(ast["left"], environment)
         right_value = evaluate(ast["right"], environment)
@@ -224,6 +227,16 @@ def test_while_statement():
     assert env["x"] == 6
     assert env["y"] == 7
 
+def test_evaluate_zschupba():
+    """
+    Test calling zschupba and printing _kentid_.
+    """
+    print("testing evaluate zschupba")
+    eval("zschupba")
+    eval("print _kentid_")
+    assert (printed_string == "zschupba@kent.edu")
+
+
 if __name__ == "__main__":
     test_evaluate_number()
     test_evaluate_addition()
@@ -235,4 +248,5 @@ if __name__ == "__main__":
     test_evaluate_identifier()
     test_if_statement()
     test_while_statement()
+    test_evaluate_zschupba()
     print("done.")

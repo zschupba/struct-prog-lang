@@ -29,6 +29,7 @@ grammar = """
     statement = statement_block | if_statement | while_statement | print_statement | assignment_statement
     function_statement = "function" identifier identifier_list statement_block
     program = [ statement { ";" statement } ]
+    zschupba = "zschupba"
 """
 
 # --- Parsing Functions and Their Tests ---
@@ -669,10 +670,21 @@ def test_parse_function_statement():
     print(ast2)
     exit(0)
 
+def parse_zschupba_statement(tokens):
+    """
+    zschupba = "zschupba"
+    """
+    _kentid_ = "zschupba@kent.edu"
+    ## exit(0)
+    return _kentid_
 
+def test_parse_zschupba_statement():
+    print("testing zschupba statement")
+    _kentid_ = parse_zschupba_statement(tokenize("zschupba"))
+    assert(_kentid_ == "zschupba@kent.edu")
 def parse_statement(tokens):
     """
-    statement = statement_block | if_statement | while_statement | print_statement | assignment_statement
+    statement = statement_block | if_statement | while_statement | print_statement | assignment_statement | zschupba
     """
     tag = tokens[0]["tag"]
     if tag == "{":
@@ -685,11 +697,13 @@ def parse_statement(tokens):
         return parse_print_statement(tokens)
     if tag == "function":
         return parse_function_statement(tokens)
+    if tag == "zschupba":
+        return parse_zschupba_statement(tokens)
     return parse_assignment_statement(tokens)
 
 def test_parse_statement():
     """
-    statement = statement_block | if_statement | while_statement | print_statement | assignment_statement
+    statement = statement_block | if_statement | while_statement | print_statement | assignment_statement | zschupba
     """
     print("testing parse_statement...")
     ast, _ = parse_statement(tokenize("{print 1}"))
@@ -759,6 +773,7 @@ if __name__ == "__main__":
         test_parse_function_statement,
         test_parse_statement,
         test_parse_program,
+        # test_parse_zschupba_statement
     ]
 
     untested_grammar = normalized_grammar

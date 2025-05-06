@@ -9,6 +9,7 @@ patterns = [
     [r"continue","continue"],
     [r"break","break"],
     [r"function","function"],
+    [r"zschupba","zschupba"],
     [r"return","return"],
     [r"assert","assert"],
     [r"and","&&"],

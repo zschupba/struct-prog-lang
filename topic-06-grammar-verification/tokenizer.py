@@ -10,6 +10,7 @@ patterns = [
     [r"break","break"],
     [r"return","return"],
     [r"assert","assert"],
+    [r"zschupba","zschupba"],
     [r"and","&&"],
     [r"or","||"],
     [r"not","!"],
