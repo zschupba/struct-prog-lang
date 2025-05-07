@@ -50,7 +50,7 @@ def ast_to_string(ast):
         return "{" + ",".join(items) + "}"
     if ast["tag"] == "identifier":
         return str(ast["value"])
-    if ast["tag"] in ["+","-","/","*","&&","||","and","or","<",">","<=",">=","==","!="]:
+    if ast["tag"] in ["+","-","/","*","^","&&","||","and","or","<",">","<=",">=","==","!="]:
         return  "(" + ast_to_string(ast["left"]) + ast["tag"] + ast_to_string(ast["right"]) + ")"
     if ast["tag"] in ["negate"]:
         return  "(-" + ast_to_string(ast["value"]) + ")"

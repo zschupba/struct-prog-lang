@@ -22,7 +22,7 @@ grammar = """
 
     arithmetic_factor = complex_expression
     exponent_expression = (arithmetic_factor "^" arithmetic_factor) | arithmetic_factor   ## Either get exponent or returns arithmetic_factor
-    arithmetic_term = exponent_expression { ("*" | "/") exponent_expression }
+    arithmetic_term = exponent_expression { ("*" | "/") exponent_expression }             
     arithmetic_expression = arithmetic_term { ("+" | "-") arithmetic_term }
     relational_expression = arithmetic_expression { ("<" | ">" | "<=" | ">=" | "==" | "!=") arithmetic_expression }
     logical_factor = relational_expression
@@ -708,6 +708,26 @@ def test_parse_arithmetic_expression():
     ast = parse_arithmetic_expression(tokenize("(x+y)*z"))[0]
     assert ast == {
         "tag": "*",
+        "left": {
+            "tag": "+",
+            "left": {"tag": "identifier", "value": "x"},
+            "right": {"tag": "identifier", "value": "y"},
+        },
+        "right": {"tag": "identifier", "value": "z"},
+    }
+    ast = parse_arithmetic_expression(tokenize("x+y^z"))[0]
+    assert ast == {
+        "tag": "+",
+        "left": {"tag": "identifier", "value": "x"},
+        "right": {
+            "tag": "^",
+            "left": {"tag": "identifier", "value": "y"},
+            "right": {"tag": "identifier", "value": "z"},
+        },
+    }
+    ast = parse_arithmetic_expression(tokenize("(x+y)^z"))[0]
+    assert ast == {
+        "tag": "^",
         "left": {
             "tag": "+",
             "left": {"tag": "identifier", "value": "x"},
