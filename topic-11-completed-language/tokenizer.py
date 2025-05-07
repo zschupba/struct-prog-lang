@@ -29,6 +29,7 @@ patterns = [
     [r"\-", "-"],
     [r"\*", "*"],
     [r"\/", "/"],
+    [r"\^", "^"],       # carrot is exponent
     [r"\%", "%"],
     [r"\(", "("],
     [r"\)", ")"],
@@ -104,14 +105,14 @@ def tokenize(characters, generated_tags=test_generated_tags):
 
 def test_simple_tokens():
     print("testing simple tokens...")
-    examples = ".,[,],+,-,*,/,(,),{,},;,:,!,&&,||,<,>,<=,>=,==,!=,=,%".split(",")
+    examples = ".,[,],+,-,*,/,^,(,),{,},;,:,!,&&,||,<,>,<=,>=,==,!=,=,%".split(",")
     examples.append(",")
     for example in examples:
         t = tokenize(example)[0]
         assert t["tag"] == example
         assert t["position"] == 0
         assert t["value"] == example
-    example = "(*/ +-[]{})  //comment"
+    example = "(^*/ +-[]{})  //comment"
     t = tokenize(example)
     example = example.replace(" ", "").replace("//comment", "")
     n = len(example)
@@ -203,6 +204,19 @@ def test_multiple_tokens():
         {"tag": "+", "value": "+", "position": 1},
         {"tag": "number", "value": 4, "position": 2},
         {"tag": "*", "value": "*", "position": 3},
+        {"tag": "(", "value": "(", "position": 4},
+        {"tag": "number", "value": 5, "position": 5},
+        {"tag": "-", "value": "-", "position": 6},
+        {"tag": "number", "value": 2, "position": 7},
+        {"tag": ")", "value": ")", "position": 8},
+        {"tag": None, "value": None, "position": 9},
+    ]
+
+    assert tokenize("3+4^(5-2)") == [
+        {"tag": "number", "value": 3, "position": 0},
+        {"tag": "+", "value": "+", "position": 1},
+        {"tag": "number", "value": 4, "position": 2},
+        {"tag": "^", "value": "^", "position": 3},
         {"tag": "(", "value": "(", "position": 4},
         {"tag": "number", "value": 5, "position": 5},
         {"tag": "-", "value": "-", "position": 6},

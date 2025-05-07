@@ -201,6 +201,18 @@ def evaluate(ast, environment):
             return left_value - right_value, None
         raise Exception(f"Illegal types for {ast["tag"]}:{types}")
 
+    if ast["tag"] == "^":
+        left_value, _ = evaluate(ast["left"], environment)
+        right_value, _ = evaluate(ast["right"], environment)
+        types = type_of(left_value, right_value)
+        if types == "number-number":
+            return left_value ^ right_value, None
+        if types == "string-number":
+            return left_value ^ int(right_value), None
+        if types == "number-string":
+            return right_value ^ int(left_value), None
+        raise Exception(f"Illegal types for {ast['tag']}:{types}")
+    
     if ast["tag"] == "*":
         left_value, _ = evaluate(ast["left"], environment)
         right_value, _ = evaluate(ast["right"], environment)

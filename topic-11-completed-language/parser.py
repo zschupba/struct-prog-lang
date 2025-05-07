@@ -21,7 +21,8 @@ grammar = """
     complex_expression = simple_expression { ("[" expression "]") | ("." identifier) | "(" [ expression { "," expression } ] ")" }
 
     arithmetic_factor = complex_expression
-    arithmetic_term = arithmetic_factor { ("*" | "/") arithmetic_factor }
+    exponent_expression = (arithmetic_factor "^" arithmetic_factor) | arithmetic_factor   ## Either get exponent or returns arithmetic_factor
+    arithmetic_term = exponent_expression { ("*" | "/") exponent_expression }
     arithmetic_expression = arithmetic_term { ("+" | "-") arithmetic_term }
     relational_expression = arithmetic_expression { ("<" | ">" | "<=" | ">=" | "==" | "!=") arithmetic_expression }
     logical_factor = relational_expression
@@ -551,21 +552,51 @@ def test_parse_arithmetic_factor():
         assert parse_arithmetic_factor(t)[0] == parse_complex_expression(t)[0]
 
 
-def parse_arithmetic_term(tokens):
+def parse_exponent_expression(tokens):
     """
-    arithmetic_term = arithmetic_factor { ("*" | "/") arithmetic_factor }
+    exponent_expression = (arithmetic_factor "^" arithmetic_factor) | arithmetic_factor   ## Either get exponent or returns arithmetic_factor
     """
     node, tokens = parse_arithmetic_factor(tokens)
+    while tokens[0]["tag"] == "^":
+        next_node, tokens = parse_arithmetic_factor(tokens[1:])
+        node = {"tag": "^", "left": node, "right": next_node}
+    return node, tokens
+
+def test_parse_exponent_expression(tokens):
+    """
+    exponent_expression = (arithmetic_factor "^" arithmetic_factor) | arithmetic_factor   ## Either get exponent or returns arithmetic_factor
+    """
+    # Tests base case is still the same
+    ast, tokens = parse_arithmetic_term(tokenize("x"))
+    assert ast == {"tag": "identifier", "value": "x"}
+
+    # Idk what else what we could test its a simple expression, i tested more in the arithmetic term
+    ast, tokens = parse_arithmetic_term(tokenize("x^y"))
+    assert ast == {
+        "tag": "^",
+        "left": {"tag": "identifier", "value": "x"},
+        "right": {"tag": "identifier", "value": "y"},
+    }
+
+
+
+
+def parse_arithmetic_term(tokens):
+    """
+    arithmetic_term = exponent_expression { ("*" | "/") exponent_expression }
+    ### arithmetic_term now handle exponent_expression not arithmetic_factor (which messes up naming but shhhh)
+    """
+    node, tokens = parse_exponent_expression(tokens)    # Exponents are handled before terms
     while tokens[0]["tag"] in ["*", "/"]:
         tag = tokens[0]["tag"]
-        next_node, tokens = parse_arithmetic_factor(tokens[1:])
+        next_node, tokens = parse_exponent_expression(tokens[1:])
         node = {"tag": tag, "left": node, "right": next_node}
     return node, tokens
 
 
 def test_parse_arithmetic_term():
     """
-    arithmetic_term = arithmetic_factor { ("*" | "/") arithmetic_factor }
+    arithmetic_term = exponent_expression { ("*" | "/") exponent_expression }  
     """
     print("testing parse_arithmetic_term...")
     ast, tokens = parse_arithmetic_term(tokenize("x"))
@@ -594,6 +625,28 @@ def test_parse_arithmetic_term():
             "right": {"tag": "identifier", "value": "y"},
         },
         "right": {"tag": "identifier", "value": "z"},
+    }
+    # Tests exponent before arithmetic term
+    ast, tokens = parse_arithmetic_term(tokenize("x^y/z"))
+    assert ast == {
+        "tag": "/",
+        "left": {
+            "tag": "^",
+            "left": {"tag": "identifier", "value": "x"},
+            "right": {"tag": "identifier", "value": "y"},
+        },
+        "right": {"tag": "identifier", "value": "z"},
+    }
+    # Tests exponent after arithmetic term
+    ast, tokens = parse_arithmetic_term(tokenize("x*y^z"))
+    assert ast == {
+        "tag": "*",
+        "left": {"tag": "identifier", "value": "x"},
+        "right": {
+            "tag": "^",
+            "left": {"tag": "identifier", "value": "y"},
+            "right": {"tag": "identifier", "value": "z"},
+        },
     }
 
 
