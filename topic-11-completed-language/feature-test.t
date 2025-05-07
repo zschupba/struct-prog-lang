@@ -19,6 +19,8 @@ assert a == true;
 assert b == false;
 assert n == null;
 
+
+
 // ------------------------------------------------------------
 // Arithmetic Operations
 // ------------------------------------------------------------
@@ -28,6 +30,10 @@ assert 5 - 3 == 2;
 assert 3 * 4 == 12;
 assert 8 / 2 == 4;
 assert (1 + 2) * 3 == 9;
+assert 5 ^ 3 == 125;
+assert 2 * 3 ^ 3 == 54;
+print("showing off that it passes");
+
 
 // ------------------------------------------------------------
 // Boolean and Logical Operations

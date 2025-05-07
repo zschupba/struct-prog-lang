@@ -1397,7 +1397,7 @@ def parse(tokens):
 
 def test_parse():
     print("testing parse")
-    tokens = tokenize("2+3*4+5")
+    tokens = tokenize("2+3*4+5^6")
     ast = parse(tokens)
     assert ast == {
         "tag": "program",
@@ -1412,7 +1412,11 @@ def test_parse():
                     },
                     "tag": "+",
                 },
-                "right": {"tag": "number", "value": 5},
+                "right": {
+                    "left": {"tag": "number", "value": 5},
+                    "right": {"tag": "number", "value": 6},
+                    "tag": "^",
+                },
                 "tag": "+",
             }
         ],

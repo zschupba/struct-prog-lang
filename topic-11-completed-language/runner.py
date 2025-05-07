@@ -38,7 +38,9 @@ def main():
                 # Tokenize, parse, and execute the code
                 tokens = tokenize(source_code)
                 ast = parse(tokens)
-                evaluate(ast, environment)
+                print(evaluate(ast, environment) [0])   
+
+                
             except Exception as e:
                 print(f"Error: {e}")
 
