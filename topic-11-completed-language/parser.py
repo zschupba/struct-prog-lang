@@ -562,16 +562,17 @@ def parse_exponent_expression(tokens):
         node = {"tag": "^", "left": node, "right": next_node}
     return node, tokens
 
-def test_parse_exponent_expression(tokens):
+def test_parse_exponent_expression():
     """
     exponent_expression = (arithmetic_factor "^" arithmetic_factor) | arithmetic_factor   ## Either get exponent or returns arithmetic_factor
     """
+    print("testing parse_exponent_expression...")
     # Tests base case is still the same
-    ast, tokens = parse_arithmetic_term(tokenize("x"))
+    ast, tokens = parse_exponent_expression(tokenize("x"))
     assert ast == {"tag": "identifier", "value": "x"}
 
     # Idk what else what we could test its a simple expression, i tested more in the arithmetic term
-    ast, tokens = parse_arithmetic_term(tokenize("x^y"))
+    ast, tokens = parse_exponent_expression(tokenize("x^y"))
     assert ast == {
         "tag": "^",
         "left": {"tag": "identifier", "value": "x"},
@@ -1465,6 +1466,7 @@ if __name__ == "__main__":
         test_parse_function,
         test_parse_complex_expression,
         test_parse_arithmetic_factor,
+        test_parse_exponent_expression,
         test_parse_arithmetic_term,
         test_parse_arithmetic_expression,
         test_parse_relational_expression,
@@ -1501,3 +1503,4 @@ if __name__ == "__main__":
     #     print(f"Untested grammar = [[[ {test_grammar} ]]]")
 
     test_parse()
+    print("all tests passed")
